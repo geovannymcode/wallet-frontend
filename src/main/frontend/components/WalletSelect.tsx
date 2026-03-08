@@ -24,7 +24,7 @@ export default function WalletSelect({ wallets, value, onChange, label, exclude,
           .filter((w) => !exclude || w.walletId !== exclude)
           .map((w) => (
             <option key={w.walletId} value={w.walletId}>
-              {w.ownerName} ({w.walletId})
+              {w.ownerName}
             </option>
           ))}
       </select>

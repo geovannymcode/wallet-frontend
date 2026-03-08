@@ -124,22 +124,84 @@ export default function MovimientosPage({ walletId, onToast }: MovimientosPagePr
       )}
 
       {detail && (
-        <Card style={{ animation: "fadeUp 0.3s ease" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-            <h3 style={{ fontSize: "1rem", fontWeight: 700 }}>Detalle de Transacción</h3>
-            <button onClick={() => setDetail(null)} style={{
-              background: "none", border: "none", color: "var(--text-dim)",
-              fontSize: 18, cursor: "pointer",
-            }}>✕</button>
-          </div>
-          <pre style={{
-            fontFamily: "var(--mono)", fontSize: "0.8rem", lineHeight: 1.7,
-            color: "var(--purple-light)", background: "var(--bg-elevated)",
-            padding: 16, borderRadius: 12, overflowX: "auto",
-            border: "1px solid var(--border)",
+        <Card style={{ animation: "fadeUp 0.3s ease", padding: 0, overflow: "hidden" }}>
+          <div style={{
+            background: detail.status === "PROCESSED"
+              ? "linear-gradient(135deg, #059669 0%, #10b981 100%)"
+              : detail.status === "CANCELLED"
+                ? "linear-gradient(135deg, #dc2626 0%, #ef4444 100%)"
+                : "linear-gradient(135deg, #d97706 0%, #f59e0b 100%)",
+            padding: "24px 24px 20px", position: "relative", overflow: "hidden",
           }}>
-            {JSON.stringify(detail, null, 2)}
-          </pre>
+            <div style={{
+              position: "absolute", top: -20, right: -20, width: 100, height: 100,
+              borderRadius: "50%", background: "rgba(255,255,255,0.08)",
+            }} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", position: "relative", zIndex: 1 }}>
+              <div>
+                <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.7)", marginBottom: 4 }}>
+                  Monto de la transacción
+                </div>
+                <div style={{ fontSize: "1.8rem", fontWeight: 800, color: "#fff", letterSpacing: "-1px" }}>
+                  ${detail.amount?.toLocaleString()}
+                  <span style={{ fontSize: "0.85rem", fontWeight: 500, marginLeft: 6, opacity: 0.8 }}>
+                    {detail.currency}
+                  </span>
+                </div>
+              </div>
+              <button onClick={() => setDetail(null)} style={{
+                background: "rgba(255,255,255,0.15)", border: "none", color: "#fff",
+                width: 32, height: 32, borderRadius: 10, fontSize: 14, cursor: "pointer",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                backdropFilter: "blur(8px)",
+              }}>✕</button>
+            </div>
+            <div style={{ marginTop: 12, position: "relative", zIndex: 1 }}>
+              <StatusPill status={detail.status} />
+            </div>
+          </div>
+
+          <div style={{ padding: "20px 24px" }}>
+            <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "var(--text-sub)", marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+              Información del Pago
+            </div>
+
+            {[
+              { icon: "🔑", label: "ID de Pago", value: detail.paymentId, mono: true },
+              { icon: "💳", label: "Billetera Origen", value: detail.walletId, mono: true },
+              { icon: "📩", label: "Billetera Destino", value: detail.recipientWalletId, mono: true },
+              { icon: "💬", label: "Concepto", value: detail.concept || "Sin concepto", mono: false },
+              { icon: "🕐", label: "Fecha", value: detail.createdAt ? new Date(detail.createdAt).toLocaleString("es-CO", { dateStyle: "medium", timeStyle: "short" }) : "—", mono: false },
+            ].map((row, i) => (
+              <div key={i} style={{
+                display: "flex", alignItems: "center", gap: 14,
+                padding: "14px 0",
+                borderBottom: i < 4 ? "1px solid var(--border)" : "none",
+              }}>
+                <div style={{
+                  width: 36, height: 36, borderRadius: 10,
+                  background: "var(--bg-elevated)", border: "1px solid var(--border)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 16, flexShrink: 0,
+                }}>
+                  {row.icon}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: "0.72rem", color: "var(--text-dim)", marginBottom: 2 }}>
+                    {row.label}
+                  </div>
+                  <div style={{
+                    fontSize: "0.88rem", fontWeight: 600,
+                    fontFamily: row.mono ? "var(--mono)" : "var(--font)",
+                    color: "var(--text)",
+                    wordBreak: "break-all",
+                  }}>
+                    {row.value}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </Card>
       )}
     </div>
