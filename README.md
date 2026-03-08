@@ -1,51 +1,206 @@
-# Custom project from Hilla
+# 💳 Wallet Pay — Billetera Digital
 
-This project can be used as a starting point to create your own Hilla application with Spring Boot.
-It contains all the necessary configuration and some placeholder files to get you started.
+Aplicación de billetera digital construida con **Hilla (Vaadin + React)** en el frontend y un backend **NestJS** con arquitectura **CQRS + Event Sourcing**.
 
-## Running the application
+La interfaz simula una billetera tipo fintech (estilo Nequi, DaviPlata) con un diseño oscuro, moderno y mobile-first.
 
-The project is a standard Maven project. To run it from the command line,
-type `mvnw` (Windows), or `./mvnw` (Mac & Linux), then open
-http://localhost:8080 in your browser.
+---
 
-You can also import the project to your IDE of choice as you would with any
-Maven project.
+## 📸 Vista General
 
-## Deploying to Production
+La aplicación tiene 4 secciones principales accesibles desde la barra de navegación inferior:
 
-To create a production build, call `mvnw clean package -Pproduction` (Windows),
-or `./mvnw clean package -Pproduction` (Mac & Linux).
-This will build a JAR file with all the dependencies and front-end resources,
-ready to be deployed. The file can be found in the `target` folder after the build completes.
+| Sección | Descripción |
+|---------|-------------|
+| 🏠 **Inicio** | Dashboard con tarjeta de billetera, configuración de wallet ID y últimos movimientos |
+| 📤 **Enviar** | Flujo de transferencia en 3 pasos: formulario → confirmación → éxito |
+| 📋 **Movimientos** | Lista de transacciones con filtros, detalle expandible y acciones (cancelar/reembolsar) |
+| 📜 **Historial** | Timeline visual del Event Store con todos los eventos de una billetera |
 
-Once the JAR file is built, you can run it using
-`java -jar target/myapp-1.0-SNAPSHOT.jar` (NOTE, replace
-`myapp-1.0-SNAPSHOT.jar` with the name of your jar).
+---
 
-## Project structure
+## 🛠️ Tecnologías
 
-<table style="width:100%; text-align: left;">
-  <tr><th>Directory</th><th>Description</th></tr>
-  <tr><td><code>src/main/frontend/</code></td><td>Client-side source directory</td></tr>
-  <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<code>index.html</code></td><td>HTML template</td></tr>
-  <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<code>index.ts</code></td><td>Frontend 
-entrypoint, bootstraps a React application</td></tr>
-  <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<code>routes.tsx</code></td><td>React Router routes definition</td></tr>
-  <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<code>MainLayout.tsx</code></td><td>Main 
-layout component, contains the navigation menu, uses <a href="https://hilla.dev/docs/react/components/app-layout">
-App Layout</a></td></tr>
-  <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<code>views/</code></td><td>UI view 
-components</td></tr>
-  <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<code>themes/</code></td><td>Custom  
-CSS styles</td></tr>
-  <tr><td><code>src/main/java/&lt;groupId&gt;/</code></td><td>Server-side 
-source directory, contains the server-side Java views</td></tr>
-  <tr><td>&nbsp;&nbsp;&nbsp;&nbsp;<code>Application.java</code></td><td>Server entry-point</td></tr>
-</table>
+### Frontend
+- **Hilla 25** (framework de Vaadin con React)
+- **React 19** con TypeScript
+- **Vite** como bundler
+- **Spring Boot** como servidor (sirve el frontend)
 
-## Useful links
+### Backend (externo)
+- **NestJS** con arquitectura CQRS + Event Sourcing
+- API REST corriendo en `http://localhost:3000`
 
-- Read the documentation at [hilla.dev/docs](https://hilla.dev/docs/).
-- Ask questions on [Stack Overflow](https://stackoverflow.com/questions/tagged/vaadin) or join our [Forum](https://vaadin.com/forum).
-- Report issues, create pull requests in [GitHub](https://github.com/vaadin/hilla).
+---
+
+## 🚀 Requisitos Previos
+
+1. **Java 17+** — para ejecutar Spring Boot / Hilla
+2. **Node.js 18+** — para compilar el frontend
+3. **Backend NestJS** corriendo en `http://localhost:3000`
+
+---
+
+## ▶️ Cómo Ejecutar
+
+### 1. Clonar el repositorio
+
+```bash
+git clone <url-del-repositorio>
+cd wallet-frontend
+```
+
+### 2. Asegurarse de que el backend esté corriendo
+
+El backend NestJS debe estar en `http://localhost:3000`. La app mostrará un indicador **"Online"** (verde) u **"Offline"** (rojo) en el header según el estado de la conexión.
+
+### 3. Iniciar la aplicación
+
+**Mac / Linux:**
+```bash
+./mvnw
+```
+
+**Windows:**
+```bash
+mvnw
+```
+
+Esto arranca Spring Boot con Hilla. Una vez iniciado, abre tu navegador en:
+
+```
+http://localhost:8080
+```
+
+---
+
+## 📦 Endpoints del Backend Consumidos
+
+La aplicación consume los siguientes endpoints de la API NestJS:
+
+| Método | Endpoint | Uso en la App |
+|--------|----------|---------------|
+| `GET` | `/payments/health` | Verificar conexión (indicador Online/Offline) |
+| `POST` | `/payments` | Enviar una transferencia (página Enviar) |
+| `POST` | `/payments/:id/cancel` | Cancelar un pago (página Movimientos) |
+| `POST` | `/payments/:id/refund` | Solicitar reembolso (página Movimientos) |
+| `GET` | `/payments` | Listar pagos con filtros (páginas Inicio y Movimientos) |
+| `GET` | `/payments/:id` | Obtener detalle de un pago (página Movimientos) |
+| `GET` | `/payments/history/:walletId` | Historial de eventos (página Historial) |
+
+### Ejemplos de Body
+
+**Procesar Pago (`POST /payments`):**
+```json
+{
+  "walletId": "WAL-001",
+  "amount": 100,
+  "currency": "USD",
+  "recipientWalletId": "WAL-002",
+  "concept": "Pago de prueba"
+}
+```
+
+**Cancelar Pago (`POST /payments/:id/cancel`):**
+```json
+{
+  "reason": "Pago duplicado"
+}
+```
+
+**Reembolsar Pago (`POST /payments/:id/refund`):**
+```json
+{
+  "reason": "Solicitud del cliente"
+}
+```
+
+---
+
+## 📁 Estructura del Proyecto
+
+```
+wallet-frontend/
+├── src/
+│   ├── main/
+│   │   ├── frontend/                  # Código del frontend (React + TypeScript)
+│   │   │   ├── index.html             # Template HTML principal
+│   │   │   └── views/
+│   │   │       ├── @index.tsx         # Componente principal — toda la app de billetera
+│   │   │       └── @layout.tsx        # Layout simplificado (solo renderiza el Outlet)
+│   │   └── java/                      # Código del servidor Spring Boot
+│   │       └── Application.java       # Punto de entrada del servidor
+├── package.json                       # Dependencias de Node.js
+├── pom.xml                            # Dependencias de Maven / Spring Boot
+├── vite.config.ts                     # Configuración de Vite
+└── README.md                          # Este archivo
+```
+
+### Archivo principal: `@index.tsx`
+
+Este archivo contiene **toda la lógica del frontend** en un solo componente autocontenido:
+
+- **`api`** — Servicio que consume los endpoints del backend NestJS
+- **`WalletHero`** — Tarjeta hero con gradiente que muestra el wallet ID
+- **`InicioPage`** — Dashboard con configuración y últimos movimientos
+- **`EnviarPage`** — Flujo de transferencia (formulario → confirmar → éxito)
+- **`MovimientosPage`** — Lista de transacciones con filtros y acciones
+- **`HistorialPage`** — Timeline visual del Event Store
+- **`WalletCQRSApp`** — Componente raíz que maneja el estado global y la navegación
+
+---
+
+## 🏗️ Compilar para Producción
+
+**Mac / Linux:**
+```bash
+./mvnw clean package -Pproduction
+```
+
+**Windows:**
+```bash
+mvnw clean package -Pproduction
+```
+
+Esto genera un archivo `.jar` en la carpeta `target/` con el frontend y backend empaquetados. Para ejecutarlo:
+
+```bash
+java -jar target/wallet-frontend-1.0-SNAPSHOT.jar
+```
+
+---
+
+## ⚙️ Configuración
+
+### Cambiar la URL del Backend
+
+Si tu backend NestJS no está en `http://localhost:3000`, edita la constante `API_BASE` en el archivo:
+
+```
+src/main/frontend/views/@index.tsx
+```
+
+```typescript
+const API_BASE = "http://localhost:3000"; // ← Cambia esta URL
+```
+
+---
+
+## 🎨 Diseño
+
+- **Tema oscuro** con paleta de colores purple/violet
+- **Mobile-first** (max-width 480px centrado)
+- **Navegación inferior** fija tipo app nativa
+- **Glass morphism** en header y bottom nav con backdrop blur
+- **Animaciones** sutiles (fadeUp, pulse)
+- **Fuentes**: Inter (UI) + JetBrains Mono (datos técnicos)
+- **Todo en español**
+
+---
+
+## 📚 Enlaces Útiles
+
+- [Documentación de Hilla](https://hilla.dev/docs/)
+- [Documentación de NestJS CQRS](https://docs.nestjs.com/recipes/cqrs)
+- [Vaadin Forum](https://vaadin.com/forum)
+- [Stack Overflow — Vaadin](https://stackoverflow.com/questions/tagged/vaadin)
