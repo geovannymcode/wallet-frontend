@@ -4,3 +4,57 @@ target/
 node_modules/
 src/main/frontend/generated/
 vite.generated.ts
+
+
+# =========================
+# OS
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# IDE
+# =========================
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# =========================
+# Java / Maven
+# =========================
+target/
+*.log
+
+# =========================
+# Node / Frontend
+# =========================
+node_modules/
+package-lock.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =========================
+# Vaadin
+# =========================
+.vaadin/
+.vaadin-node-tasks.lock
+frontend/generated/
+frontend/node_modules/
+
+# =========================
+# Build
+# =========================
+build/
+dist/
+out/
+
+# =========================
+# Environment
+# =========================
+.env
+.env.local
+.env.production
+.env.development
