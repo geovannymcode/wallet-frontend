@@ -35,25 +35,55 @@ export default function CancelarPage({ onToast }: CancelarPageProps) {
 
   if (result) {
     return (
-      <Card style={{ textAlign: "center", padding: "40px 24px", animation: "fadeUp 0.4s ease" }}>
+      <Card style={{ padding: 0, overflow: "hidden", animation: "fadeUp 0.4s ease" }}>
         <div style={{
-          width: 72, height: 72, borderRadius: "50%", background: "var(--red-bg)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 36, margin: "0 auto 20px",
-        }}>🚫</div>
-        <h2 style={{ fontSize: "1.3rem", fontWeight: 800, marginBottom: 8 }}>Pago Cancelado</h2>
-        <p style={{ color: "var(--text-sub)", fontSize: "0.9rem", marginBottom: 20 }}>
-          El pago <strong style={{ fontFamily: "var(--mono)" }}>{paymentId}</strong> ha sido cancelado.
-        </p>
-        <pre style={{
-          fontFamily: "var(--mono)", fontSize: "0.78rem", color: "var(--text-dim)",
-          background: "var(--bg-elevated)", padding: "12px 16px", borderRadius: 12,
-          overflowX: "auto", textAlign: "left", lineHeight: 1.6,
+          background: "linear-gradient(135deg, #dc2626 0%, #ef4444 100%)",
+          padding: "32px 24px 24px", textAlign: "center", position: "relative", overflow: "hidden",
         }}>
-          {JSON.stringify(result, null, 2)}
-        </pre>
-        <div style={{ marginTop: 24 }}>
-          <ActionButton onClick={resetForm}>Cancelar otro pago</ActionButton>
+          <div style={{
+            position: "absolute", top: -20, right: -20, width: 100, height: 100,
+            borderRadius: "50%", background: "rgba(255,255,255,0.08)",
+          }} />
+          <div style={{
+            width: 64, height: 64, borderRadius: "50%", background: "rgba(255,255,255,0.15)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 32, margin: "0 auto 16px", backdropFilter: "blur(8px)",
+          }}>🚫</div>
+          <h2 style={{ fontSize: "1.3rem", fontWeight: 800, color: "#fff", marginBottom: 4 }}>Pago Cancelado</h2>
+          <p style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.7)" }}>
+            La operación se completó correctamente
+          </p>
+        </div>
+
+        <div style={{ padding: "20px 24px" }}>
+          {[
+            { icon: "🔑", label: "ID del Pago", value: result.paymentId || paymentId },
+            { icon: "📌", label: "Estado", value: result.status || "CANCELLED" },
+            { icon: "💬", label: "Motivo", value: result.reason || reason },
+            { icon: "✅", label: "Mensaje", value: result.message || "Pago cancelado" },
+          ].map((row, i) => (
+            <div key={i} style={{
+              display: "flex", alignItems: "center", gap: 14, padding: "14px 0",
+              borderBottom: i < 3 ? "1px solid var(--border)" : "none",
+            }}>
+              <div style={{
+                width: 36, height: 36, borderRadius: 10, background: "var(--bg-elevated)",
+                border: "1px solid var(--border)", display: "flex", alignItems: "center",
+                justifyContent: "center", fontSize: 16, flexShrink: 0,
+              }}>{row.icon}</div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: "0.72rem", color: "var(--text-dim)", marginBottom: 2 }}>{row.label}</div>
+                <div style={{
+                  fontSize: "0.88rem", fontWeight: 600, color: "var(--text)", wordBreak: "break-all",
+                  fontFamily: row.label === "ID del Pago" ? "var(--mono)" : "var(--font)",
+                }}>{row.value}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ padding: "0 24px 24px", textAlign: "center" }}>
+          <ActionButton onClick={resetForm} style={{ width: "100%" }}>Cancelar otro pago</ActionButton>
         </div>
       </Card>
     );
